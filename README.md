@@ -716,3 +716,41 @@ It is the highest resolution at which both:
 and
 
 > **the model can still construct the image reliably.**
+
+___
+
+## Update 1 — 2026-10-04 - Follow-up Test
+
+# SDXL Batch / Throughput Optimization Test
+
+Test configuration: SDXL at 800×1200 resolution, 35 steps, batch sizes 6, 9 and 12.
+
+The first SDXL run after a fresh model load was treated as a warm-up and excluded from long-term throughput comparison. All later `Prompt executed` times were included, so the results represent the complete workflow including sampler, VAE/decode and other overhead.
+
+## Measured results
+
+| Batch | Average run time | Time per image | Images/min | Images/hour |
+|---:|---:|---:|---:|---:|
+| 12 | 144.33 s | 12.03 s | 4.99 | ~299 |
+| 9 | 110.85 s | 12.32 s | 4.87 | ~292 |
+| 6 | 74.85 s | 12.47 s | 4.81 | ~289 |
+
+## Equal-output comparison
+
+For an equal output of 108 images:
+
+- **Batch 12:** 9 runs → ~21:39
+- **Batch 9:** 12 runs → ~22:10
+- **Batch 6:** 18 runs → ~22:27
+
+Batch 9 therefore loses only about 31 seconds compared with batch 12 over 108 completed images.
+
+The sampler itself scales almost linearly between batch 6, 9 and 12. The throughput advantage of the larger batch mainly comes from spreading fixed workflow overhead across more output images.
+
+Batch 12 remained stable during testing and still retained approximately 2 GB of VRAM headroom. For this specific 800×1200 SDXL workflow, it can therefore be considered a comfortable upper working point.
+
+Batch 9 delivers nearly the same real-world throughput while providing additional VRAM headroom. For longer unattended generation sessions, it represents a more conservative long-run sweet spot.
+
+Across the complete test session, approximately 125 images were successfully generated across Krea2 and SDXL configurations, in addition to one intentionally interrupted VRAM spill test. Performance remained reproducible and stable after recovery.
+
+
