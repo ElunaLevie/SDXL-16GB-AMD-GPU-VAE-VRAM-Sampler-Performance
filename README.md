@@ -719,7 +719,7 @@ and
 
 ___
 
-## Update 1 — 2026-10-04 - Follow-up Test
+## Update 1 — 2026-10-04 — Follow-up Test
 
 # SDXL Batch / Throughput Optimization Test
 
